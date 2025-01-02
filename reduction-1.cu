@@ -1,9 +1,10 @@
 #include <iostream>
 #include<cuda_runtime.h>
 #include <chrono>
+#include <algorithm>
 
 // REDUCTION 1 – Interleaved Addressing without branch divergence
-__global__ void reduce0(int *g_in_data, int *g_out_data){
+__global__ void reduce1(int *g_in_data, int *g_out_data){
     extern __shared__ int sdata[];  // stored in the shared memory
 
     // Each thread loading one element from global onto shared memory
@@ -29,7 +30,7 @@ __global__ void reduce0(int *g_in_data, int *g_out_data){
 
 // I hope to use this main file for all of the reduction files
 int main(){
-    int n = 1<<20; // about 1M elements for now
+    int n = 1 << 20; // about 1M elements for now
     size_t bytes = n * sizeof(int);
 
     // Host/CPU arrays
@@ -40,6 +41,7 @@ int main(){
     int *dev_input_data, *dev_output_data;
 
     //Init data
+    srand(42); // Fixed seed
     for (int i = 0; i < n; i++){
         host_input_data[i] = rand() % 100;
     }
@@ -58,7 +60,7 @@ int main(){
     // Launch Kernel and Synchronize threads
     int num_blocks = (n + blockSize - 1) / blockSize;
     int num_threads = blockSize * sizeof(int);
-    reduce0<<<num_blocks, num_threads>>>(dev_input_data, dev_output_data);
+    reduce1<<<num_blocks, num_threads>>>(dev_input_data, dev_output_data);
     cudaDeviceSynchronize();
 
     auto stop = std::chrono::high_resolution_clock::now();
@@ -75,6 +77,15 @@ int main(){
 
     std::cout << "Reduced result: " << finalResult << std::endl;
     std::cout << "Time elapsed: " << duration << " ms" << std::endl;
+
+    int cpuResult = *std::min_element(host_input_data, host_input_data + n);
+    if (cpuResult == finalResult) {
+        std::cout << "Verification successful: GPU result matches CPU result." << std::endl;
+        std::cout << "GPU Result: " << finalResult << ", CPU Result: " << cpuResult << std::endl;
+    } else {
+        std::cout << "Verification failed: GPU result (" << finalResult << ") does not match CPU result (" << cpuResult << ")." << std::endl;
+        std::cout << "GPU Result: " << finalResult << ", CPU Result: " << cpuResult << std::endl;
+    }
 
     // Computing bandwidth
     double bandwidth = bytes / duration / 1e6; // computed in GB/s
