@@ -1,7 +1,7 @@
 #include <iostream>
-#include<cuda_runtime.h>
+#include <cuda_runtime.h>
 #include <chrono>
-#include <algorithm>
+#include <numeric> // Include for std::accumulate
 
 // REDUCTION 1 – Interleaved Addressing without branch divergence
 __global__ void reduce1(int *g_in_data, int *g_out_data){
@@ -17,7 +17,7 @@ __global__ void reduce1(int *g_in_data, int *g_out_data){
     for(unsigned int s = 1; s < blockDim.x; s *= 2){
         // note the stride as s *= 2 : this causes the interleaving addressing
         int index = 2 * s * tid;    // now we don't need a diverging branch from the if condition
-        if (index < blockDim.x)
+        if (index + s < blockDim.x)
         {
             sdata[index] += sdata[index + s];   // s is used to denote the offset that will be combined
         }
@@ -59,8 +59,12 @@ int main(){
 
     // Launch Kernel and Synchronize threads
     int num_blocks = (n + blockSize - 1) / blockSize;
-    int num_threads = blockSize * sizeof(int);
-    reduce1<<<num_blocks, num_threads>>>(dev_input_data, dev_output_data);
+    cudaError_t err;
+    reduce1<<<num_blocks, blockSize, blockSize * sizeof(int)>>>(dev_input_data, dev_output_data);
+    err = cudaGetLastError();
+    if (err != cudaSuccess) {
+        std::cerr << "CUDA error: " << cudaGetErrorString(err) << std::endl;
+    }
     cudaDeviceSynchronize();
 
     auto stop = std::chrono::high_resolution_clock::now();
@@ -72,13 +76,14 @@ int main(){
     // Final reduction on the host
     int finalResult = host_output_data[0];
     for (int i = 1; i < (n + 255) / 256; ++i) {
-        finalResult = min(finalResult, host_output_data[i]);
+        finalResult += host_output_data[i];
     }
 
     std::cout << "Reduced result: " << finalResult << std::endl;
     std::cout << "Time elapsed: " << duration << " ms" << std::endl;
 
-    int cpuResult = *std::min_element(host_input_data, host_input_data + n);
+    // CPU Summation for verification
+    int cpuResult = std::accumulate(host_input_data, host_input_data + n, 0);
     if (cpuResult == finalResult) {
         std::cout << "Verification successful: GPU result matches CPU result." << std::endl;
         std::cout << "GPU Result: " << finalResult << ", CPU Result: " << cpuResult << std::endl;
