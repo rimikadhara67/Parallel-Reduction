@@ -1,7 +1,7 @@
 #include <iostream>
-#include<cuda_runtime.h>
+#include <cuda_runtime.h>
 #include <chrono>
-#include <numeric> 
+#include <numeric>
 
 // REDUCTION 0 – Interleaved Addressing
 __global__ void reduce0(int *g_in_data, int *g_out_data){
@@ -15,10 +15,8 @@ __global__ void reduce0(int *g_in_data, int *g_out_data){
 
     // Reduction method -- occurs in shared memory
     for(unsigned int s = 1; s < blockDim.x; s *= 2){
-        // note the stride as s *= 2 : this causes the interleaving addressing
-        if (tid % (2*s) == 0)
-        {
-            sdata[tid] += sdata[tid + s];   // s is used to denote the offset that will be combined
+        if (tid % (2 * s) == 0) {
+            sdata[tid] += sdata[tid + s];   // Ensuring addition does not go out of bounds
         }
         __syncthreads();
     }
@@ -29,17 +27,17 @@ __global__ void reduce0(int *g_in_data, int *g_out_data){
 
 // I hope to use this main file for all of the reduction files
 int main(){
-    int n = 1 << 20; // about 1M elements for now
+    int n = 1 << 22; // Increase to about 4M elements
     size_t bytes = n * sizeof(int);
 
     // Host/CPU arrays
-    int *host_input_data = new int[n];  
+    int *host_input_data = new int[n];
     int *host_output_data = new int[(n + 255) / 256]; // to have sufficient size for output array
-    
+
     // Device/GPU arrays
     int *dev_input_data, *dev_output_data;
 
-    //Init data
+    // Init data
     srand(42); // Fixed seed
     for (int i = 0; i < n; i++){
         host_input_data[i] = rand() % 100;
@@ -52,9 +50,9 @@ int main(){
     // Copying our data onto the device (GPU)
     cudaMemcpy(dev_input_data, host_input_data, bytes, cudaMemcpyHostToDevice);
 
-    int blockSize = 256; //number of threads per block
+    int blockSize = 256; // number of threads per block
 
-    auto start = std::chrono::high_resolution_clock::now(); //start timer
+    auto start = std::chrono::high_resolution_clock::now(); // start timer
 
     // Launch Kernel and Synchronize threads
     int num_blocks = (n + blockSize - 1) / blockSize;
@@ -67,7 +65,7 @@ int main(){
     cudaDeviceSynchronize();
 
     auto stop = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count() / 1000.0; // duration in milliseconds with three decimal points
 
     // Copying data back to the host (CPU)
     cudaMemcpy(host_output_data, dev_output_data, (n + 255) / 256 * sizeof(int), cudaMemcpyDeviceToHost);
@@ -78,26 +76,24 @@ int main(){
         finalResult += host_output_data[i];
     }
 
-    std::cout << "Reduced result: " << finalResult << std::endl;
-    std::cout << "Time elapsed: " << duration << " ms" << std::endl;
-
     // CPU Summation for verification
     int cpuResult = std::accumulate(host_input_data, host_input_data + n, 0);
     if (cpuResult == finalResult) {
-        std::cout << "Verification successful: GPU result matches CPU result." << std::endl;
+        std::cout << "Verification successful: GPU result matches CPU result.\n";
         std::cout << "GPU Result: " << finalResult << ", CPU Result: " << cpuResult << std::endl;
     } else {
-        std::cout << "Verification failed: GPU result (" << finalResult << ") does not match CPU result (" << cpuResult << ")." << std::endl;
+        std::cout << "Verification failed: GPU result (" << finalResult << ") does not match CPU result (" << cpuResult << ").\n";
         std::cout << "GPU Result: " << finalResult << ", CPU Result: " << cpuResult << std::endl;
     }
 
-    // Computing bandwidth
-    double bandwidth = bytes / duration / 1e6; // computed in GB/s
+    double bandwidth = (duration > 0) ? (bytes / duration / 1e6) : 0; // computed in GB/s, handling zero duration
+    std::cout << "Reduced result: " << finalResult << std::endl;
+    std::cout << "Time elapsed: " << duration << " ms" << std::endl;
     std::cout << "Effective bandwidth: " << bandwidth << " GB/s" << std::endl;
 
     // Freeing memory
     cudaFree(dev_input_data);
     cudaFree(dev_output_data);
-    delete [] host_input_data;
-    delete [] host_output_data;
+    delete[] host_input_data;
+    delete[] host_output_data;
 }
