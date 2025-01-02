@@ -2,6 +2,29 @@
 #include<cuda_runtime.h>
 #include <chrono>
 
+// REDUCTION 0 – Interleaving Addressing
+__global__ void reduce0(int *g_in_data, int *g_out_data){
+    extern __shared__ int sdata[];  // stored in the shared memory
+
+    // Each thread loading one element from global onto shared memory
+    unsigned int tid = threadIdx.x;
+    unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
+    sdata[tid] = g_in_data[i];
+    __syncthreads();
+
+    // Reduction method -- occurs in shared memory
+    for(unsigned int s = 1; s < blockDim.x; s *= 2){
+        // note the stride as s *= 2 : this causes the interleaving addressing
+        if (tid % (2*s) == 0)
+        {
+            sdata[tid] += sdata[tid + s];   // s is used to denote the offset that will be combined
+        }
+        __syncthreads();
+    }
+    if (tid == 0){
+        g_out_data[blockIdx.x] = sdata[0];
+    }
+}
 
 // I hope to use this main file for all of the reduction files
 int main(){
@@ -10,7 +33,7 @@ int main(){
 
     // Host/CPU arrays
     int *host_input_data = new int[n];  
-    int *host_output_data = new int[n + 255] / 256; // to have sufficient size for output array
+    int *host_output_data = new int[(n + 255) / 256]; // to have sufficient size for output array
     
     // Device/GPU arrays
     int *dev_input_data, *dev_output_data;
@@ -32,29 +55,29 @@ int main(){
     auto start = std::chrono::high_resolution_clock::now(); //start timer
 
     // Launch Kernel and Synchronize threads
-    num_blocks = (n + blockSize - 1) / blockSize;
-    num_threads = blockSize * sizeof(int);
+    int num_blocks = (n + blockSize - 1) / blockSize;
+    int num_threads = blockSize * sizeof(int);
     reduce0<<<num_blocks, num_threads>>>(dev_input_data, dev_output_data);
     cudaDeviceSynchronize();
 
-    auto stop = std::chorno::high_resolution_clock::now();
-    auto duration - std::chrono::duration_cast<std::milliseconds>(stop - start).count();
+    auto stop = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count();
 
     // Copying data back to the host (CPU)
     cudaMemcpy(host_output_data, dev_output_data, (n + 255) / 256 * sizeof(int), cudaMemcpyDeviceToHost);
 
     // Final reduction on the host
-    int finalResult = h_odata[0];
+    int finalResult = host_output_data[0];
     for (int i = 1; i < (n + 255) / 256; ++i) {
-        finalResult = min(finalResult, h_odata[i]);
+        finalResult = min(finalResult, host_output_data[i]);
     }
 
     std::cout << "Reduced result: " << finalResult << std::endl;
     std::cout << "Time elapsed: " << duration << " ms" << std::endl;
 
     // Computing bandwidth
-    double bandwisth = bytes / duration / 1e6; // computed in GB/s
-    std::cout << "Effective bandwidth: " << bandwidth << " GB/s" << std:endl;
+    double bandwidth = bytes / duration / 1e6; // computed in GB/s
+    std::cout << "Effective bandwidth: " << bandwidth << " GB/s" << std::endl;
 
     // Freeing memory
     cudaFree(dev_input_data);
