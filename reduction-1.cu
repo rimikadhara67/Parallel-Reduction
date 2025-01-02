@@ -2,7 +2,7 @@
 #include<cuda_runtime.h>
 #include <chrono>
 
-// REDUCTION 0 – Interleaved Addressing
+// REDUCTION 1 – Interleaved Addressing without branch divergence
 __global__ void reduce0(int *g_in_data, int *g_out_data){
     extern __shared__ int sdata[];  // stored in the shared memory
 
@@ -15,9 +15,10 @@ __global__ void reduce0(int *g_in_data, int *g_out_data){
     // Reduction method -- occurs in shared memory
     for(unsigned int s = 1; s < blockDim.x; s *= 2){
         // note the stride as s *= 2 : this causes the interleaving addressing
-        if (tid % (2*s) == 0)
+        int index = 2 * s * tid;    // now we don't need a diverging branch from the if condition
+        if (index < blockDim.x)
         {
-            sdata[tid] += sdata[tid + s];   // s is used to denote the offset that will be combined
+            sdata[index] += sdata[index + s];   // s is used to denote the offset that will be combined
         }
         __syncthreads();
     }
