@@ -2,6 +2,8 @@
 
 This repository contains the CUDA source code for a series of optimized parallel reduction kernels. The focus is on demonstrating various optimization strategies for reduction algorithms on GPUs, specifically tailored for NVIDIA GPUs.
 
+Guiding [NVIDIA Webinar link](<https://developer.download.nvidia.com/assets/cuda/files/reduction.pdf>)
+
 ## Blog Post
 
 I have documented the optimization process and provided a detailed analysis of each step in a blog post on Medium. For a more comprehensive understanding of the methods and their impacts, check out the post [here](<insert-link-here>).
@@ -9,7 +11,7 @@ I have documented the optimization process and provided a detailed analysis of e
 ## Hardware Specifications
 
 - **GPU**: Tesla T4
-- **Architecture**: The Tesla T4 is based on the Turing architecture which provides significant improvements over older architectures such as the Tesla architecture used in the GE80 GPUs referenced in the original NVIDIA webinar.
+- **Architecture**: The Tesla T4 is based on the Turing architecture which provides significant improvements over older architectures such as the Tesla architecture used in the GeForce 8800 (GE80) GPUs referenced in the original NVIDIA webinar.
 
 ## Experiment Setup
 
