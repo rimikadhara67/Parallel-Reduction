@@ -16,7 +16,7 @@ __global__ void reduce0(int *g_in_data, int *g_out_data){
     // Reduction method -- occurs in shared memory
     for(unsigned int s = 1; s < blockDim.x; s *= 2){
         if (tid % (2 * s) == 0) {
-            sdata[tid] += sdata[tid + s];   // Ensuring addition does not go out of bounds
+            sdata[tid] += sdata[tid + s];   
         }
         __syncthreads();
     }
