@@ -2,7 +2,7 @@
 
 This repository contains the CUDA source code for a series of optimized parallel reduction kernels. The focus is on demonstrating various optimization strategies for reduction algorithms on GPUs, specifically tailored for NVIDIA GPUs.
 
-Guiding [NVIDIA Webinar link](<https://developer.download.nvidia.com/assets/cuda/files/reduction.pdf>)
+Guiding [NVIDIA Webinar Presentation Slides by Mark Harris](<https://developer.download.nvidia.com/assets/cuda/files/reduction.pdf>)
 
 ## Blog Post
 
