@@ -80,12 +80,15 @@ int main(){
     // CPU Summation for verification
     int cpuResult = std::accumulate(host_input_data, host_input_data + n, 0);
     if (cpuResult == finalResult) {
+        std::cout << "\033[32m"; // Set text color to green
         std::cout << "Verification successful: GPU result matches CPU result.\n";
         std::cout << "GPU Result: " << finalResult << ", CPU Result: " << cpuResult << std::endl;
     } else {
+        std::cout << "\033[31m"; // Set text color to red
         std::cout << "Verification failed: GPU result (" << finalResult << ") does not match CPU result (" << cpuResult << ").\n";
         std::cout << "GPU Result: " << finalResult << ", CPU Result: " << cpuResult << std::endl;
     }
+    std::cout << "\033[0m"; // Reset text color to default
 
     double bandwidth = (duration > 0) ? (bytes / duration / 1e6) : 0; // computed in GB/s, handling zero duration
     std::cout << "Reduced result: " << finalResult << std::endl;
