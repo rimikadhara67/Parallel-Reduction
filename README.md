@@ -1,12 +1,21 @@
 # Parallel-Reduction
 
-This repository contains the CUDA source code for a series of optimized parallel reduction kernels. The focus is on demonstrating various optimization strategies for reduction algorithms on GPUs, specifically tailored for NVIDIA GPUs.
+This repository contains the CUDA source code for a series of optimized parallel reduction kernels. The focus is on demonstrating 7 optimization strategies for reduction algorithms on GPUs, specifically tailored for NVIDIA GPUs that were outlined by Mark Harris's webinar linked below. 
 
-Guiding [NVIDIA Webinar Presentation Slides by Mark Harris](<https://developer.download.nvidia.com/assets/cuda/files/reduction.pdf>)
+Source: [NVIDIA Webinar Presentation Slides by Mark Harris](<https://developer.download.nvidia.com/assets/cuda/files/reduction.pdf>)
 
-## Blog Post
+List of 7 optimizations:
+0. Interleaved Addressing
+1. Interleaved Addressing 2.0
+2. Sequence Addressing
+3. First Add During Load
+4. Unrolling Last Warp
+5. Completely Unrolling
+6. Multiple Adds / Threads
 
 I have documented the optimization process and provided a detailed analysis of each step in a blog post on Medium. For a more comprehensive understanding of the methods and their impacts, check out the post [here](<insert-link-here>).
+
+## Results at a Glance
 
 ## Hardware Specifications
 
