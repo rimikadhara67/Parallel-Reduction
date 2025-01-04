@@ -4,7 +4,8 @@ This repository contains the CUDA source code for a series of optimized parallel
 
 Source: [NVIDIA Webinar Presentation Slides by Mark Harris](<https://developer.download.nvidia.com/assets/cuda/files/reduction.pdf>)
 
-List of 7 optimizations:
+**List of 7 optimizations:**
+
 0. Interleaved Addressing
 1. Interleaved Addressing 2.0
 2. Sequence Addressing
@@ -13,9 +14,11 @@ List of 7 optimizations:
 5. Completely Unrolling
 6. Multiple Adds / Threads
 
+**Blog Post with a Comprehensive Explanation**
 I have documented the optimization process and provided a detailed analysis of each step in a blog post on Medium. For a more comprehensive understanding of the methods and their impacts, check out the post [here](<insert-link-here>).
 
 ## Results at a Glance
+![Optimization Results](results.png)
 
 ## Hardware Specifications
 
