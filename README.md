@@ -15,7 +15,7 @@ Source: [NVIDIA Webinar Presentation Slides by Mark Harris](<https://developer.d
 6. Multiple Adds / Threads
 
 **Blog Post with a Comprehensive Explanation**
-I have documented the optimization process and provided a detailed analysis of each step in a blog post on Medium. For a more comprehensive understanding of the methods and their impacts, check out the post [here](<insert-link-here>).
+I have documented the optimization process and provided a detailed analysis of each step in a blog post on Medium. Check out the post [here](<insert-link-here>).
 
 ## Results at a Glance
 ![Optimization Results](results.png)
