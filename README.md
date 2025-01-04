@@ -14,7 +14,7 @@ Source: [NVIDIA Webinar Presentation Slides by Mark Harris](<https://developer.d
 5. Completely Unrolling
 6. Multiple Adds / Threads
 
-**Blog Post with a Comprehensive Explanation**
+**Blog Post with a Comprehensive Explanation:**
 I have documented the optimization process and provided a detailed analysis of each step in a blog post on Medium. Check out the post [here](<insert-link-here>).
 
 ## Results at a Glance
