@@ -45,7 +45,7 @@ __global__ void reduce4(int *g_in_data, int *g_out_data){
 
 // I hope to use this main file for all of the reduction files
 int main(){
-    int n = 1<<20; // Increase to about 4M elements
+    int n = 1<<22; // Increase to about 4M elements
     size_t bytes = n * sizeof(int);
 
     // Host/CPU arrays
