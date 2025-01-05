@@ -19,8 +19,10 @@ I have documented the optimization process and provided a detailed analysis of e
 
 ## Results at a Glance
 ![Optimization Results](results.png)
-![Cumulative SpeedUp Growth](growth1.png)
-![Bandwidth Growth](growth2.png)
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    <img src="growth1.png" alt="Cumulative SpeedUp Growth" style="width: 50%;">
+    <img src="growth2.png" alt="Bandwidth Growth" style="width: 50%;">
+</div>
 
 ## Hardware Specifications
 
