@@ -19,6 +19,8 @@ I have documented the optimization process and provided a detailed analysis of e
 
 ## Results at a Glance
 ![Optimization Results](results.png)
+![Cumulative SpeedUp Growth](growth1.png)
+![Bandwidth Growth](growth2.png)
 
 ## Hardware Specifications
 
