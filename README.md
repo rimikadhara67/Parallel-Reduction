@@ -1,6 +1,6 @@
 # Parallel-Reduction
 
-This repository contains the CUDA source code for a series of optimized parallel reduction kernels. The focus is on demonstrating 7 optimization strategies for reduction algorithms on GPUs, specifically tailored for NVIDIA GPUs that were outlined by Mark Harris's webinar linked below. 
+Whether it be mean/max pooling, calculating losses, or softmax normalizations, reductions are everywhere in ML!  With this project, I aim to provide a series of optimizations we can perform on our reduction algorithm to make it faster and more efficient. My project is by Mark Harris's webinar linked below. 
 
 Source: [NVIDIA Webinar Presentation Slides by Mark Harris](<https://developer.download.nvidia.com/assets/cuda/files/reduction.pdf>)
 
